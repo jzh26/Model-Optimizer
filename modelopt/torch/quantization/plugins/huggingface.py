@@ -82,25 +82,27 @@ class _QuantAttention(QuantModule):
         self.use_kitchen = False
 
     def _init_kitchen_attn_fn(self):
-        if not self.softmax_quantizer.is_enabled:
+        # Kitchen's flash-attention path only supports an MXFP8 softmax quantizer.
+        # For a disabled quantizer — or any other enabled one, e.g. the per-tensor
+        # FP8 E4M3 that the ViT recipes use — fall through to the non-kitchen
+        # wrapper-softmax path in `_quantized_attention` instead of raising: mark
+        # kitchen disabled and leave `use_kitchen` False so `mtq.quantize` doesn't
+        # error out at calibration on a kitchen-equipped host.
+        if not self.softmax_quantizer.is_enabled or not self.softmax_quantizer.is_mxfp(8):
             self.kitchen_attn_fn = "disabled"
             return
         self.use_kitchen = True
-        if self.softmax_quantizer.is_mxfp(8):
-            qfa_params = triton_fa_params.QTritonFAParams(
-                backend="triton",
-                qk_dot_precisions="bf16@bf16",
-                pv_dot_precisions="mxfp8_e4m3_emulation@bf16",
-                dp_v_x_do_dot_precisions="bf16@bf16",
-                dp_do_x_v_dot_precisions="bf16@bf16",
-                dq_ds_x_k_dot_precisions="bf16@bf16",
-                dk_ds_x_q_dot_precisions="bf16@bf16",
-                dv_p_x_do_dot_precisions="bf16@bf16",
-                use_natural_transcendental_func=False,  # Different from default
-            )
-        else:
-            raise NotImplementedError(f"softmax_quantizer not supported: {self.softmax_quantizer}")
-
+        qfa_params = triton_fa_params.QTritonFAParams(
+            backend="triton",
+            qk_dot_precisions="bf16@bf16",
+            pv_dot_precisions="mxfp8_e4m3_emulation@bf16",
+            dp_v_x_do_dot_precisions="bf16@bf16",
+            dp_do_x_v_dot_precisions="bf16@bf16",
+            dq_ds_x_k_dot_precisions="bf16@bf16",
+            dk_ds_x_q_dot_precisions="bf16@bf16",
+            dv_p_x_do_dot_precisions="bf16@bf16",
+            use_natural_transcendental_func=False,  # Different from default
+        )
         self.kitchen_attn_fn = KitchenFlashAttentionModule(
             num_attention_heads=self.config.num_attention_heads,
             kv_channels=self.config.head_dim,

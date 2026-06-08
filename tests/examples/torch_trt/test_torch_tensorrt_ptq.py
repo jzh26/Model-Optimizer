@@ -23,10 +23,10 @@ from _test_utils.examples.run_command import extend_cmd_parts, run_example_comma
 _PRECISIONS = ["fp8", "nvfp4"]
 
 # Tiny ViT config (~1 encoder block) so the test stays under a few seconds
-# of GPU time while exercising every code path the recipe touches: encoder
-# Linear weight/input quantizers, attention BMM + softmax quantizers,
-# per-block LayerNorm output quantizer, and the patch-embed Conv / final
-# vit.layernorm / classifier skip rules.
+# of GPU time while exercising every code path the recipe touches: weight +
+# input quantizers across all weight-bearing modules (encoder Linears, the
+# patch-embed Conv2d, and the classifier head), all module inputs, the
+# attention BMM + softmax quantizers, and the disabled output quantizers.
 _TINY_VIT_KWARGS = {
     "num_hidden_layers": 1,
     "hidden_size": 64,
@@ -42,8 +42,9 @@ def test_torch_tensorrt_ptq(precision):
     Runs against the smallest viable ``ViTForImageClassification`` config so
     the test stays fast; ``--no_pretrained`` skips the multi-GB pretrained
     download. The example's CLI exits non-zero if any step (calibration,
-    quantization, TRT compile) fails or if the compiled-model argmax doesn't
-    match the fake-quant argmax on the sample input.
+    quantization, TRT compile) fails; the baseline/fake-quant/TRT argmax
+    comparison it prints is informational only — a tiny random-weight ViT
+    under NVFP4 can legitimately flip argmax, so it is not gated.
     """
     pytest.importorskip("torch_tensorrt")
 
