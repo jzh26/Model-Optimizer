@@ -471,6 +471,31 @@ class _TransposedQuantization(torch.autograd.Function):
 _transposed_quantize = _TransposedQuantization.apply
 
 
+def _iter_transposed_expert_weights_for_calibration(module):
+    """Yield ``(weight.transpose(-1, -2), weight_quantizer)`` for BMM-style experts.
+
+    ``_QuantGptOssExperts`` / ``_QuantLlama4TextExperts`` hold 3-D expert weights of shape
+    ``(num_experts, in_dim, out_dim)`` and quantize them *transposed* in the forward (see
+    :class:`_TransposedQuantization`: per-channel / per-block quantization expects the
+    contraction ``in_dim`` as the last axis). Weight-only calibration
+    (``max_calibrate`` -> ``weight_only_quantize``) must feed the weight quantizer the same
+    transposed view; otherwise static-block NVFP4 locks ``_original_shape`` from the
+    non-transposed weight here and the forward then raises "Input shape has changed".
+    Calibrating transposed also matches the orientation the unified HF export reads ``_amax``
+    in (it transposes BMM expert weights before deriving scales).
+
+    The transposed view is not made contiguous (unlike the forward's ``_transposed_quantize``,
+    which needs it for the matmul): calibration only reads the shape and reduces for ``_amax``,
+    both of which the quantizer handles on a non-contiguous view via ``reshape``.
+    """
+    for weight_name in ("gate_up_proj", "down_proj"):
+        weight = getattr(module, weight_name, None)
+        weight_quantizer = getattr(module, f"{weight_name}_weight_quantizer", None)
+        if weight is None or weight_quantizer is None:
+            continue
+        yield weight.transpose(-1, -2), weight_quantizer
+
+
 class _QuantSparseSequentialMoe(QuantModule):
     """Quantization wrapper for HuggingFace sparse MoE blocks.
 
@@ -607,6 +632,11 @@ class _QuantLlama4TextExperts(QuantModule):
         self.gate_up_proj_weight_quantizer = TensorQuantizer()
         self.down_proj_input_quantizer = TensorQuantizer()
         self.down_proj_weight_quantizer = TensorQuantizer()
+
+    def iter_weights_for_calibration(self):
+        # Weights are quantized transposed in forward (_transposed_quantize); calibrate
+        # the weight quantizers on the same transposed view (see helper docstring).
+        yield from _iter_transposed_expert_weights_for_calibration(self)
 
     def forward(self, hidden_states: torch.Tensor) -> torch.Tensor:
         hidden_states = hidden_states.view(self.num_experts, -1, self.hidden_size)
@@ -1280,6 +1310,13 @@ class _QuantGptOssExperts(_QuantFunctionalMixin):
         self._register_dynamic_attribute(
             "down_proj", partial(self._get_quantized_weight, self.down_proj_weight_quantizer)
         )
+
+    def iter_weights_for_calibration(self):
+        # Weights are quantized transposed in forward (_transposed_quantize); calibrate
+        # the weight quantizers on the same transposed view (see helper docstring).
+        # ``_enable_weight_quantization`` is False during weight-only calibration, so the
+        # dynamic ``gate_up_proj``/``down_proj`` attributes return the raw (unquantized) weight.
+        yield from _iter_transposed_expert_weights_for_calibration(self)
 
     def _setup(self):
         assert not hasattr(self, "kernel_layer_name"), (

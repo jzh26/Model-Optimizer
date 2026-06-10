@@ -233,6 +233,32 @@ def test_is_homogeneous_hf_model_gpt_oss():
     assert is_homogeneous_hf_model(model)
 
 
+def test_gpt_oss_experts_iter_weights_for_calibration_transposed():
+    """``_QuantGptOssExperts`` quantizes its expert weights *transposed* in the forward
+    (``_transposed_quantize`` puts the contraction ``in_dim`` last). Weight-only
+    calibration must yield the same transposed view; otherwise the unconditional
+    ``weight_only_quantize`` locks a non-transposed block-quant ``_original_shape`` and the
+    calibration forward then raises "Input shape has changed" for static-block NVFP4.
+    """
+    # Use intermediate_size != hidden_size so both expert weights are non-square and the
+    # transpose is observable in the shape.
+    model = get_tiny_gpt_oss(num_hidden_layers=1, hidden_size=32, intermediate_size=48)
+    mtq.replace_quant_module(model)
+    experts = model.model.layers[0].mlp.experts
+    assert hasattr(experts, "gate_up_proj_weight_quantizer")
+
+    yielded = {q: w for w, q in experts.iter_weights_for_calibration()}
+    # Stored weights are (num_experts, in_dim, out_dim); calibration must see (…, out_dim, in_dim).
+    assert (
+        yielded[experts.gate_up_proj_weight_quantizer].shape
+        == experts.gate_up_proj.transpose(-1, -2).shape
+    )
+    assert (
+        yielded[experts.down_proj_weight_quantizer].shape
+        == experts.down_proj.transpose(-1, -2).shape
+    )
+
+
 def test_hf_decoder_discoverer_registration_path():
     model = get_tiny_llama()
     assert any(
