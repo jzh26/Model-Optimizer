@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dataset_utils &mdash; Model Optimizer 0.0.1.dev1+g26944cba5</title>
+  <title>dataset_utils &mdash; Model Optimizer 0.0.1.dev1+gd78087873</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -123,6 +123,7 @@
 <li class="toctree-l4"><a class="reference internal" href="modelopt.torch.utils.import_utils.html">import_utils</a></li>
 <li class="toctree-l4"><a class="reference internal" href="modelopt.torch.utils.list.html">list</a></li>
 <li class="toctree-l4"><a class="reference internal" href="modelopt.torch.utils.logging.html">logging</a></li>
+<li class="toctree-l4"><a class="reference internal" href="modelopt.torch.utils.loss_mask.html">loss_mask</a></li>
 <li class="toctree-l4"><a class="reference internal" href="modelopt.torch.utils.memory_monitor.html">memory_monitor</a></li>
 <li class="toctree-l4"><a class="reference internal" href="modelopt.torch.utils.nemotron_vlm_dataset_utils.html">nemotron_vlm_dataset_utils</a></li>
 <li class="toctree-l4"><a class="reference internal" href="modelopt.torch.utils.network.html">network</a></li>
@@ -201,6 +202,9 @@
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#modelopt.torch.utils.dataset_utils.get_supported_datasets" title="modelopt.torch.utils.dataset_utils.get_supported_datasets"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_supported_datasets</span></code></a></p></td>
 <td><p>Retrieves a list of datasets supported.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#modelopt.torch.utils.dataset_utils.prepare_messages_for_chat_template" title="modelopt.torch.utils.dataset_utils.prepare_messages_for_chat_template"><code class="xref py py-obj docutils literal notranslate"><span class="pre">prepare_messages_for_chat_template</span></code></a></p></td>
+<td><p>Prepare OpenAI-style messages before <code class="docutils literal notranslate"><span class="pre">apply_chat_template</span></code>.</p></td>
 </tr>
 </tbody>
 </table>
@@ -445,6 +449,28 @@ registered datasets, or <code class="docutils literal notranslate"><span class="
 </pre></div>
 </div>
 </div></blockquote>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="modelopt.torch.utils.dataset_utils.prepare_messages_for_chat_template">
+<span class="sig-name descname"><span class="pre">prepare_messages_for_chat_template</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">messages</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reasoning_content</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'strip'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normalize_tool_calls</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#modelopt.torch.utils.dataset_utils.prepare_messages_for_chat_template" title="Link to this definition"></a></dt>
+<dd><p>Prepare OpenAI-style messages before <code class="docutils literal notranslate"><span class="pre">apply_chat_template</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>messages</strong> (<em>list</em><em>[</em><em>dict</em><em>]</em>) – Conversation turns.</p></li>
+<li><p><strong>reasoning_content</strong> (<em>Literal</em><em>[</em><em>'strip'</em><em>, </em><em>'inline'</em><em>, </em><em>'native'</em><em>]</em>) – How to handle <code class="docutils literal notranslate"><span class="pre">reasoning_content</span></code> on assistant turns:
+<code class="docutils literal notranslate"><span class="pre">&quot;strip&quot;</span></code> (default) removes the field, <code class="docutils literal notranslate"><span class="pre">&quot;inline&quot;</span></code> prepends a
+<code class="docutils literal notranslate"><span class="pre">&lt;think&gt;…&lt;/think&gt;</span></code> block to <code class="docutils literal notranslate"><span class="pre">content</span></code>, and
+<code class="docutils literal notranslate"><span class="pre">&quot;native&quot;</span></code> leaves the field intact for the tokenizer chat template.</p></li>
+<li><p><strong>normalize_tool_calls</strong> (<em>bool</em>) – Parse JSON-string <code class="docutils literal notranslate"><span class="pre">tool_calls</span></code> arguments to dicts
+so Nemotron v3 chat templates can iterate them with Jinja2 <code class="docutils literal notranslate"><span class="pre">|items</span></code>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>list</em>[<em>dict</em>]</p>
+</dd>
+</dl>
 </dd></dl>
 
 </section>

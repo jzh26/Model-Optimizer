@@ -1,5 +1,5 @@
-dataset\_utils
-==============
+loss\_mask
+==========
 
 .. List the submodules
 
@@ -15,7 +15,7 @@ dataset\_utils
    __module__ should be manually overridden -- i.e. in the ``__init__.py`` which contains ``from xxx import YYY``,
    add in ``YYY.__module__ = __name__``.
 
-.. automodule:: modelopt.torch.utils.dataset_utils
+.. automodule:: modelopt.torch.utils.loss_mask
    :members:
    :undoc-members:
 
@@ -25,6 +25,13 @@ dataset\_utils
 
    .. Overview table of available classes in the module
    
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+      :nosignatures:
+   
+      LossMaskRecovery
    
    
 
@@ -37,13 +44,7 @@ dataset\_utils
    .. autosummary::
       :nosignatures:
    
-      create_forward_loop
-      download_hf_dataset_as_jsonl
-      get_dataset_dataloader
-      get_dataset_samples
-      get_jsonl_text_samples
-      get_max_batch_size
-      get_supported_datasets
-      prepare_messages_for_chat_template
+      get_loss_mask_recovery
+      register_loss_mask_recovery
    
    
