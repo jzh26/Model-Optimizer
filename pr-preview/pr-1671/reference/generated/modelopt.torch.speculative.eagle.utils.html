@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>utils &mdash; Model Optimizer 0.0.1.dev1+g94bfcb808</title>
+  <title>utils &mdash; Model Optimizer 0.0.1.dev1+g3f011af3d</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -225,15 +225,20 @@ present when the dump was produced with <code class="docutils literal notranslat
 <li><p><strong>dumped_files</strong> (<em>list</em>) – A list of file paths to the dumped .pt files.</p></li>
 <li><p><strong>answer_only_loss</strong> (<em>bool</em>) – If True, use the <code class="docutils literal notranslate"><span class="pre">loss_mask</span></code> stored in each .pt
 file so that only assistant-produced tokens contribute to the loss.
-Raises <code class="docutils literal notranslate"><span class="pre">ValueError</span></code> on <code class="docutils literal notranslate"><span class="pre">__getitem__</span></code> if the file lacks <code class="docutils literal notranslate"><span class="pre">loss_mask</span></code>.
+If a file lacks <code class="docutils literal notranslate"><span class="pre">loss_mask</span></code> and <code class="docutils literal notranslate"><span class="pre">tokenizer</span></code> has a registered
+model-specific recovery (see <code class="docutils literal notranslate"><span class="pre">modelopt.torch.utils.loss_mask</span></code>), the
+mask is rebuilt from <code class="docutils literal notranslate"><span class="pre">input_ids</span></code>; otherwise <code class="docutils literal notranslate"><span class="pre">__getitem__</span></code> raises
+<code class="docutils literal notranslate"><span class="pre">ValueError</span></code>.
 If False (default), a uniform all-ones mask is used regardless of what
 is stored in the file (backward compatible).</p></li>
+<li><p><strong>tokenizer</strong> – Optional tokenizer used to recover the assistant mask for dumps
+that lack a stored <code class="docutils literal notranslate"><span class="pre">loss_mask</span></code>.</p></li>
 </ul>
 </dd>
 </dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="modelopt.torch.speculative.eagle.utils.OfflineSupervisedDataset.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dumped_files</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">answer_only_loss</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#modelopt.torch.speculative.eagle.utils.OfflineSupervisedDataset.__init__" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dumped_files</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">answer_only_loss</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tokenizer</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#modelopt.torch.speculative.eagle.utils.OfflineSupervisedDataset.__init__" title="Link to this definition"></a></dt>
 <dd><p>Initialize with a list of .pt file paths.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>

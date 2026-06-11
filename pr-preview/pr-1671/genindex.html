@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Index &mdash; Model Optimizer 0.0.1.dev1+g94bfcb808</title>
+  <title>Index &mdash; Model Optimizer 0.0.1.dev1+g3f011af3d</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
@@ -322,6 +322,8 @@
         <li><a href="reference/generated/modelopt.deploy.llm.generate.html#modelopt.deploy.llm.generate.LLM.__init__">(LLM method)</a>
 </li>
         <li><a href="reference/generated/modelopt.torch.distill.losses.html#modelopt.torch.distill.losses.LogitsDistillationLoss.__init__">(LogitsDistillationLoss method)</a>
+</li>
+        <li><a href="reference/generated/modelopt.torch.utils.loss_mask.html#modelopt.torch.utils.loss_mask.LossMaskRecovery.__init__">(LossMaskRecovery method)</a>
 </li>
         <li><a href="reference/generated/modelopt.torch.puzzletron.utils.validation.html#modelopt.torch.puzzletron.utils.validation.LowMemorySparseTensor.__init__">(LowMemorySparseTensor method)</a>
 </li>
@@ -1224,6 +1226,8 @@
         <li><a href="reference/generated/modelopt.onnx.export.html#modelopt.onnx.export.ONNXQuantExporter.compress_weights">(ONNXQuantExporter static method)</a>
 </li>
       </ul></li>
+      <li><a href="reference/generated/modelopt.torch.utils.loss_mask.html#modelopt.torch.utils.loss_mask.LossMaskRecovery.compute">compute (LossMaskRecovery attribute)</a>
+</li>
       <li><a href="reference/generated/modelopt.torch.quantization.calib.histogram.html#modelopt.torch.quantization.calib.histogram.HistogramCalibrator.compute_amax">compute_amax() (HistogramCalibrator method)</a>
 
       <ul>
@@ -1756,6 +1760,8 @@
         <li><a href="reference/generated/modelopt.torch.quantization.nn.modules.tensor_quantizer.html#modelopt.torch.quantization.nn.modules.tensor_quantizer.TensorQuantizer.dequantize">(TensorQuantizer method)</a>
 </li>
       </ul></li>
+      <li><a href="reference/generated/modelopt.torch.utils.loss_mask.html#modelopt.torch.utils.loss_mask.LossMaskRecovery.detect">detect (LossMaskRecovery attribute)</a>
+</li>
       <li><a href="reference/generated/modelopt.torch.fastgen.pipeline.html#modelopt.torch.fastgen.pipeline.DistillationPipeline.device">device (DistillationPipeline property)</a>
 </li>
       <li><a href="reference/generated/modelopt.torch.utils.memory_monitor.html#modelopt.torch.utils.memory_monitor.GPUMemoryMonitor.device_count">device_count (GPUMemoryMonitor attribute)</a>
@@ -2810,6 +2816,8 @@
 </li>
       <li><a href="reference/generated/modelopt.onnx.quantization.graph_utils.html#modelopt.onnx.quantization.graph_utils.get_layer_precision_mapping">get_layer_precision_mapping() (in module modelopt.onnx.quantization.graph_utils)</a>
 </li>
+      <li><a href="reference/generated/modelopt.torch.utils.loss_mask.html#modelopt.torch.utils.loss_mask.get_loss_mask_recovery">get_loss_mask_recovery() (in module modelopt.torch.utils.loss_mask)</a>
+</li>
       <li><a href="reference/generated/modelopt.torch.nas.patch.html#modelopt.torch.nas.patch.PatchManager.get_manager">get_manager() (PatchManager class method)</a>
 </li>
       <li><a href="reference/generated/modelopt.torch.utils.dataset_utils.html#modelopt.torch.utils.dataset_utils.get_max_batch_size">get_max_batch_size() (in module modelopt.torch.utils.dataset_utils)</a>
@@ -3858,10 +3866,10 @@
         <li><a href="reference/generated/modelopt.torch.trace.modules.nn.html#modelopt.torch.trace.modules.nn.SymDepth.link_to">(SymDepth method)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/generated/modelopt.torch.utils.list.html#modelopt.torch.utils.list.list_closest_to_median">list_closest_to_median() (in module modelopt.torch.utils.list)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/generated/modelopt.torch.quantization.nn.modules.quant_linear.html#modelopt.torch.quantization.nn.modules.quant_linear.RealQuantLinear.list_of_scale_tensors">list_of_scale_tensors (RealQuantLinear attribute)</a>
 </li>
       <li><a href="reference/generated/modelopt.torch.utils.nemotron_vlm_dataset_utils.html#modelopt.torch.utils.nemotron_vlm_dataset_utils.list_repo_files_cached">list_repo_files_cached() (in module modelopt.torch.utils.nemotron_vlm_dataset_utils)</a>
@@ -4009,6 +4017,8 @@
 </li>
       </ul></li>
       <li><a href="reference/generated/modelopt.torch.distill.distillation_model.html#modelopt.torch.distill.distillation_model.DistillationModel.loss_modules">loss_modules (DistillationModel property)</a>
+</li>
+      <li><a href="reference/generated/modelopt.torch.utils.loss_mask.html#modelopt.torch.utils.loss_mask.LossMaskRecovery">LossMaskRecovery (class in modelopt.torch.utils.loss_mask)</a>
 </li>
       <li><a href="reference/generated/modelopt.onnx.autocast.precisionconverter.html#modelopt.onnx.autocast.precisionconverter.InitializerConsumerTracker.low_precision_nodes">low_precision_nodes (InitializerConsumerTracker attribute)</a>
 </li>
@@ -6726,6 +6736,13 @@
 </li>
       </ul></li>
       <li>
+    modelopt.torch.utils.loss_mask
+
+      <ul>
+        <li><a href="reference/generated/modelopt.torch.utils.loss_mask.html#module-modelopt.torch.utils.loss_mask">module</a>
+</li>
+      </ul></li>
+      <li>
     modelopt.torch.utils.memory_monitor
 
       <ul>
@@ -7533,6 +7550,8 @@
 </li>
         <li><a href="reference/generated/modelopt.torch.utils.logging.html#module-modelopt.torch.utils.logging">modelopt.torch.utils.logging</a>
 </li>
+        <li><a href="reference/generated/modelopt.torch.utils.loss_mask.html#module-modelopt.torch.utils.loss_mask">modelopt.torch.utils.loss_mask</a>
+</li>
         <li><a href="reference/generated/modelopt.torch.utils.memory_monitor.html#module-modelopt.torch.utils.memory_monitor">modelopt.torch.utils.memory_monitor</a>
 </li>
         <li><a href="reference/generated/modelopt.torch.utils.nemotron_vlm_dataset_utils.html#module-modelopt.torch.utils.nemotron_vlm_dataset_utils">modelopt.torch.utils.nemotron_vlm_dataset_utils</a>
@@ -7662,6 +7681,8 @@
         <li><a href="reference/generated/modelopt.torch.distill.mode.html#modelopt.torch.distill.mode.KnowledgeDistillationModeDescriptor.name">(KnowledgeDistillationModeDescriptor property)</a>
 </li>
         <li><a href="reference/generated/modelopt.torch.distill.mode.html#modelopt.torch.distill.mode.LayerwiseKDModeDescriptor.name">(LayerwiseKDModeDescriptor property)</a>
+</li>
+        <li><a href="reference/generated/modelopt.torch.utils.loss_mask.html#modelopt.torch.utils.loss_mask.LossMaskRecovery.name">(LossMaskRecovery attribute)</a>
 </li>
         <li><a href="reference/generated/modelopt.torch.speculative.mode.html#modelopt.torch.speculative.mode.MedusaModeDescriptor.name">(MedusaModeDescriptor property)</a>
 </li>
@@ -8284,6 +8305,8 @@
 </li>
       <li><a href="reference/generated/modelopt.torch.export.tensorrt_llm_utils.html#modelopt.torch.export.tensorrt_llm_utils.prepare_enc_dec_export_dir">prepare_enc_dec_export_dir() (in module modelopt.torch.export.tensorrt_llm_utils)</a>
 </li>
+      <li><a href="reference/generated/modelopt.torch.utils.dataset_utils.html#modelopt.torch.utils.dataset_utils.prepare_messages_for_chat_template">prepare_messages_for_chat_template() (in module modelopt.torch.utils.dataset_utils)</a>
+</li>
       <li><a href="reference/generated/modelopt.torch.puzzletron.tools.validate_model.html#modelopt.torch.puzzletron.tools.validate_model.prepare_model">prepare_model() (in module modelopt.torch.puzzletron.tools.validate_model)</a>
 </li>
       <li><a href="reference/generated/modelopt.torch.export.tensorrt_llm_utils.html#modelopt.torch.export.tensorrt_llm_utils.prepare_t5_decoder_layer">prepare_t5_decoder_layer() (in module modelopt.torch.export.tensorrt_llm_utils)</a>
@@ -8733,6 +8756,8 @@
       <li><a href="reference/generated/modelopt.torch.opt.hparam.html#modelopt.torch.opt.hparam.Hparam.register_importance">register_importance() (Hparam method)</a>
 </li>
       <li><a href="reference/generated/modelopt.torch.trace.tracer.html#modelopt.torch.trace.tracer.RobustTracer.register_leaf">register_leaf() (RobustTracer class method)</a>
+</li>
+      <li><a href="reference/generated/modelopt.torch.utils.loss_mask.html#modelopt.torch.utils.loss_mask.register_loss_mask_recovery">register_loss_mask_recovery() (in module modelopt.torch.utils.loss_mask)</a>
 </li>
       <li><a href="reference/generated/modelopt.torch.kernels.sparsity.attention.html#modelopt.torch.kernels.sparsity.attention.register_ltx_triton_attention">register_ltx_triton_attention() (in module modelopt.torch.kernels.sparsity.attention)</a>
 </li>

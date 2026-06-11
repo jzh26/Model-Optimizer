@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>regex &mdash; Model Optimizer 0.0.1.dev1+g3f011af3d</title>
+  <title>loss_mask &mdash; Model Optimizer 0.0.1.dev1+g3f011af3d</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -33,8 +33,8 @@
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="robust_json" href="modelopt.torch.utils.robust_json.html" />
-    <link rel="prev" title="random" href="modelopt.torch.utils.random.html" /> 
+    <link rel="next" title="memory_monitor" href="modelopt.torch.utils.memory_monitor.html" />
+    <link rel="prev" title="logging" href="modelopt.torch.utils.logging.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -123,14 +123,14 @@
 <li class="toctree-l4"><a class="reference internal" href="modelopt.torch.utils.import_utils.html">import_utils</a></li>
 <li class="toctree-l4"><a class="reference internal" href="modelopt.torch.utils.list.html">list</a></li>
 <li class="toctree-l4"><a class="reference internal" href="modelopt.torch.utils.logging.html">logging</a></li>
-<li class="toctree-l4"><a class="reference internal" href="modelopt.torch.utils.loss_mask.html">loss_mask</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">loss_mask</a></li>
 <li class="toctree-l4"><a class="reference internal" href="modelopt.torch.utils.memory_monitor.html">memory_monitor</a></li>
 <li class="toctree-l4"><a class="reference internal" href="modelopt.torch.utils.nemotron_vlm_dataset_utils.html">nemotron_vlm_dataset_utils</a></li>
 <li class="toctree-l4"><a class="reference internal" href="modelopt.torch.utils.network.html">network</a></li>
 <li class="toctree-l4"><a class="reference internal" href="modelopt.torch.utils.perf.html">perf</a></li>
 <li class="toctree-l4"><a class="reference internal" href="modelopt.torch.utils.plugins.html">plugins</a></li>
 <li class="toctree-l4"><a class="reference internal" href="modelopt.torch.utils.random.html">random</a></li>
-<li class="toctree-l4 current"><a class="current reference internal" href="#">regex</a></li>
+<li class="toctree-l4"><a class="reference internal" href="modelopt.torch.utils.regex.html">regex</a></li>
 <li class="toctree-l4"><a class="reference internal" href="modelopt.torch.utils.robust_json.html">robust_json</a></li>
 <li class="toctree-l4"><a class="reference internal" href="modelopt.torch.utils.serialization.html">serialization</a></li>
 <li class="toctree-l4"><a class="reference internal" href="modelopt.torch.utils.speech_dataset_utils.html">speech_dataset_utils</a></li>
@@ -166,9 +166,9 @@
           <li class="breadcrumb-item"><a href="../1_modelopt_api.html">modelopt API</a></li>
           <li class="breadcrumb-item"><a href="modelopt.torch.html">torch</a></li>
           <li class="breadcrumb-item"><a href="modelopt.torch.utils.html">utils</a></li>
-      <li class="breadcrumb-item active">regex</li>
+      <li class="breadcrumb-item active">loss_mask</li>
       <li class="wy-breadcrumbs-aside">
-            <a href="../../_sources/reference/generated/modelopt.torch.utils.regex.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../../_sources/reference/generated/modelopt.torch.utils.loss_mask.rst.txt" rel="nofollow"> View page source</a>
       </li>
   </ul>
   <hr/>
@@ -176,58 +176,110 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="regex">
-<h1>regex<a class="headerlink" href="#regex" title="Link to this heading"></a></h1>
-<p id="module-modelopt.torch.utils.regex">Utilities for pattern matching on module and layer names.</p>
-<p class="rubric">Functions</p>
+  <section id="loss-mask">
+<h1>loss_mask<a class="headerlink" href="#loss-mask" title="Link to this heading"></a></h1>
+<p id="module-modelopt.torch.utils.loss_mask">Model-specific recovery of the assistant loss mask.</p>
+<p>The standard way to build an answer-only loss mask is
+<code class="docutils literal notranslate"><span class="pre">apply_chat_template(...,</span> <span class="pre">return_assistant_tokens_mask=True)</span></code>, which maps the
+<code class="docutils literal notranslate"><span class="pre">{%</span> <span class="pre">generation</span> <span class="pre">%}</span></code> template span to tokens via <code class="docutils literal notranslate"><span class="pre">char_to_token</span></code> – and that is
+only available on “fast” tokenizers. Some models ship only a slow/Python tokenizer
+and cannot use this path.</p>
+<p>This module is a small registry of per-model fallbacks that recover the mask
+directly from token ids, keyed by a <code class="docutils literal notranslate"><span class="pre">detect</span></code> predicate. Data paths consult
+<a class="reference internal" href="#modelopt.torch.utils.loss_mask.get_loss_mask_recovery" title="modelopt.torch.utils.loss_mask.get_loss_mask_recovery"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_loss_mask_recovery()</span></code></a> and stay free of any single model’s chat-format
+details.</p>
+<p class="rubric">Classes</p>
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#modelopt.torch.utils.regex.matches_pattern" title="modelopt.torch.utils.regex.matches_pattern"><code class="xref py py-obj docutils literal notranslate"><span class="pre">matches_pattern</span></code></a></p></td>
-<td><p>Check if a name matches any of the given patterns.</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#modelopt.torch.utils.loss_mask.LossMaskRecovery" title="modelopt.torch.utils.loss_mask.LossMaskRecovery"><code class="xref py py-obj docutils literal notranslate"><span class="pre">LossMaskRecovery</span></code></a></p></td>
+<td><p>A model-specific fallback for building the assistant loss mask.</p></td>
 </tr>
 </tbody>
 </table>
-<dl class="py function">
-<dt class="sig sig-object py" id="modelopt.torch.utils.regex.matches_pattern">
-<span class="sig-name descname"><span class="pre">matches_pattern</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">patterns</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allow_callable</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#modelopt.torch.utils.regex.matches_pattern" title="Link to this definition"></a></dt>
-<dd><p>Check if a name matches any of the given patterns.</p>
-<p>This utility function checks if a given name (e.g., module name, layer name)
-matches any pattern in a collection of patterns. Patterns can be:
-- String wildcards (using fnmatch syntax, e.g., “<em>.attention.</em>”)
-- Callable predicates that take a name and return bool
-- None (matches everything)</p>
+<p class="rubric">Functions</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#modelopt.torch.utils.loss_mask.get_loss_mask_recovery" title="modelopt.torch.utils.loss_mask.get_loss_mask_recovery"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_loss_mask_recovery</span></code></a></p></td>
+<td><p>Return the first registered recovery whose <code class="docutils literal notranslate"><span class="pre">detect</span></code> matches <code class="docutils literal notranslate"><span class="pre">tokenizer</span></code>.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#modelopt.torch.utils.loss_mask.register_loss_mask_recovery" title="modelopt.torch.utils.loss_mask.register_loss_mask_recovery"><code class="xref py py-obj docutils literal notranslate"><span class="pre">register_loss_mask_recovery</span></code></a></p></td>
+<td><p>Register a model-specific loss-mask recovery.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py class">
+<dt class="sig sig-object py" id="modelopt.torch.utils.loss_mask.LossMaskRecovery">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">LossMaskRecovery</span></span><a class="headerlink" href="#modelopt.torch.utils.loss_mask.LossMaskRecovery" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>A model-specific fallback for building the assistant loss mask.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>name</strong> (<em>str</em>) – The name to check (e.g., “model.layer1.attention.weight”)</p></li>
-<li><p><strong>patterns</strong> (<em>str</em><em> | </em><em>Callable</em><em>[</em><em>[</em><em>str</em><em>]</em><em>, </em><em>bool</em><em>] </em><em>| </em><em>Iterable</em><em>[</em><em>str</em><em> | </em><em>Callable</em><em>[</em><em>[</em><em>str</em><em>]</em><em>, </em><em>bool</em><em>]</em><em>] </em><em>| </em><em>None</em>) – A single pattern, iterable of patterns, or None.
-If None, returns True (matches everything).</p></li>
-<li><p><strong>allow_callable</strong> (<em>bool</em>) – If False, raises TypeError when encountering callable patterns.
-Useful for contexts where only string patterns are allowed.</p></li>
+<li><p><strong>name</strong> – Identifier for the target model family (for logging/debugging).</p></li>
+<li><p><strong>detect</strong> – Returns <code class="docutils literal notranslate"><span class="pre">True</span></code> if this recovery applies to the given tokenizer.</p></li>
+<li><p><strong>compute</strong> – Maps <code class="docutils literal notranslate"><span class="pre">(tokenizer,</span> <span class="pre">input_ids)</span></code> to a <code class="docutils literal notranslate"><span class="pre">(seq_len,)</span></code> <code class="docutils literal notranslate"><span class="pre">LongTensor</span></code>
+mask aligned to <code class="docutils literal notranslate"><span class="pre">input_ids</span></code> (1 on tokens that should contribute to
+the loss, 0 otherwise).</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>True if the name matches any pattern, False otherwise.</p>
-</dd>
-<dt class="field-odd">Raises<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>TypeError</strong> – If pattern type is unsupported or if callable patterns are
-    provided when allow_callable=False.</p>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="modelopt.torch.utils.loss_mask.LossMaskRecovery.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">detect</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">compute</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#modelopt.torch.utils.loss_mask.LossMaskRecovery.__init__" title="Link to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em>)</p></li>
+<li><p><strong>detect</strong> (<em>Callable</em><em>[</em><em>[</em><em>object</em><em>]</em><em>, </em><em>bool</em><em>]</em>)</p></li>
+<li><p><strong>compute</strong> (<em>Callable</em><em>[</em><em>[</em><em>object</em><em>, </em><em>Tensor</em><em>]</em><em>, </em><em>Tensor</em><em>]</em>)</p></li>
+</ul>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><em>bool</em></p>
+<dd class="field-even"><p><em>None</em></p>
 </dd>
 </dl>
-<p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">matches_pattern</span><span class="p">(</span><span class="s2">&quot;model.attention.query&quot;</span><span class="p">,</span> <span class="s2">&quot;*.attention.*&quot;</span><span class="p">)</span>
-<span class="go">True</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">matches_pattern</span><span class="p">(</span><span class="s2">&quot;model.mlp.linear&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;*.attention.*&quot;</span><span class="p">,</span> <span class="s2">&quot;*.mlp.*&quot;</span><span class="p">])</span>
-<span class="go">True</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">matches_pattern</span><span class="p">(</span><span class="s2">&quot;model.layer1&quot;</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="s2">&quot;layer&quot;</span> <span class="ow">in</span> <span class="n">x</span><span class="p">)</span>
-<span class="go">True</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">matches_pattern</span><span class="p">(</span><span class="s2">&quot;anything&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-<span class="go">True</span>
-</pre></div>
-</div>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="modelopt.torch.utils.loss_mask.LossMaskRecovery.compute">
+<span class="sig-name descname"><span class="pre">compute</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">object</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Tensor</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Tensor</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#modelopt.torch.utils.loss_mask.LossMaskRecovery.compute" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="modelopt.torch.utils.loss_mask.LossMaskRecovery.detect">
+<span class="sig-name descname"><span class="pre">detect</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">object</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">bool</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#modelopt.torch.utils.loss_mask.LossMaskRecovery.detect" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="modelopt.torch.utils.loss_mask.LossMaskRecovery.name">
+<span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#modelopt.torch.utils.loss_mask.LossMaskRecovery.name" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="modelopt.torch.utils.loss_mask.get_loss_mask_recovery">
+<span class="sig-name descname"><span class="pre">get_loss_mask_recovery</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tokenizer</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#modelopt.torch.utils.loss_mask.get_loss_mask_recovery" title="Link to this definition"></a></dt>
+<dd><p>Return the first registered recovery whose <code class="docutils literal notranslate"><span class="pre">detect</span></code> matches <code class="docutils literal notranslate"><span class="pre">tokenizer</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#modelopt.torch.utils.loss_mask.LossMaskRecovery" title="modelopt.torch.utils.loss_mask.LossMaskRecovery"><em>LossMaskRecovery</em></a> | <em>None</em></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="modelopt.torch.utils.loss_mask.register_loss_mask_recovery">
+<span class="sig-name descname"><span class="pre">register_loss_mask_recovery</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">recovery</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#modelopt.torch.utils.loss_mask.register_loss_mask_recovery" title="Link to this definition"></a></dt>
+<dd><p>Register a model-specific loss-mask recovery.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>recovery</strong> (<a class="reference internal" href="#modelopt.torch.utils.loss_mask.LossMaskRecovery" title="modelopt.torch.utils.loss_mask.LossMaskRecovery"><em>LossMaskRecovery</em></a>)</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>None</em></p>
+</dd>
+</dl>
 </dd></dl>
 
 </section>
@@ -236,8 +288,8 @@ Useful for contexts where only string patterns are allowed.</p></li>
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="modelopt.torch.utils.random.html" class="btn btn-neutral float-left" title="random" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="modelopt.torch.utils.robust_json.html" class="btn btn-neutral float-right" title="robust_json" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="modelopt.torch.utils.logging.html" class="btn btn-neutral float-left" title="logging" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="modelopt.torch.utils.memory_monitor.html" class="btn btn-neutral float-right" title="memory_monitor" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

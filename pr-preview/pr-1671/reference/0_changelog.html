@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Changelog &mdash; Model Optimizer 0.0.1.dev1+g94bfcb808</title>
+  <title>Changelog &mdash; Model Optimizer 0.0.1.dev1+g3f011af3d</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
@@ -161,6 +161,7 @@
 <p><strong>New Features</strong></p>
 <ul class="simple">
 <li><p>Add the <code class="docutils literal notranslate"><span class="pre">day0-release</span></code> agent skill (<code class="docutils literal notranslate"><span class="pre">.agents/skills/day0-release/</span></code>), a deterministic end-to-end driver that chains the PTQ → evaluation → comparison skills (the evaluation stage deploys the checkpoint itself) with an enforced gate after each stage and returns a publish decision (ACCEPT / REGRESSION / ANOMALOUS / INFEASIBLE). Ships three GPU-free, unit-tested gate scripts (<code class="docutils literal notranslate"><span class="pre">gate_ptq.py</span></code>, <code class="docutils literal notranslate"><span class="pre">gate_run.py</span></code>, <code class="docutils literal notranslate"><span class="pre">gate_compare.py</span></code>) that validate checkpoint coverage, evaluation-run completeness, and baseline-vs-candidate accuracy threshold. v1 reports and stops on regression; the recipe-search loop is deferred.</p></li>
+<li><p>Add <strong>streaming</strong> speculative-decoding training (EAGLE3 / DFlash): the draft trains on base-model hidden states produced on the fly by a co-located <code class="docutils literal notranslate"><span class="pre">vllm</span> <span class="pre">serve</span></code> (no disk dump), moved trainer-side over NIXL RDMA, scaling to multi-node (dedicated serve replicas + DDP trainers). New launcher examples for NVFP4 Kimi-K2.5 / K2.6 on GB200/aarch64 under <code class="docutils literal notranslate"><span class="pre">tools/launcher/examples/moonshotai/</span></code>.</p></li>
 </ul>
 </section>
 <section id="xx">

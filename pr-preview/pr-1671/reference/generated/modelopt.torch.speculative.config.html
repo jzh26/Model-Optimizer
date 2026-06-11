@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>config &mdash; Model Optimizer 0.0.1.dev1+g94bfcb808</title>
+  <title>config &mdash; Model Optimizer 0.0.1.dev1+g3f011af3d</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -237,7 +237,7 @@
 <dt class="sig sig-object py" id="modelopt.torch.speculative.config.DFlashConfig.dflash_offline">
 <em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">dflash_offline</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#modelopt.torch.speculative.config.DFlashConfig.dflash_offline" title="Link to this definition"></a></dt>
 <dd><p><details  class="autodoc_pydantic_collapsable_json">
-<summary>Show details</summary><p>Whether to use detached DFlash (offline training from pre-computed hidden states). Derived by ModelOptDFlashRecipe from data.offline_data_path; not user-configurable.</p>
+<summary>Show details</summary><p>Whether the DFlash module consumes pre-computed hidden states (offline from dumped .pt files, or streaming via NIXL RDMA from a vLLM serve) instead of running the base model. Derived by ModelOptDFlashRecipe from data.mode (True unless online); not user-configurable.</p>
 </details></p></dd></dl>
 
 <dl class="py attribute pydantic_field">
